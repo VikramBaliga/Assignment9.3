@@ -22,12 +22,20 @@ public class MainActivity extends AppCompatActivity {
 
     String[] name = {"AAA","BBB","CCC"};
     String[] number = {"000","111","222"};
+    String[] perm = {Manifest.permission.CALL_PHONE,Manifest.permission.SEND_SMS};
     int pos=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Get Permissons
+    if(ContextCompat.checkSelfPermission(this,Manifest.permission.CALL_PHONE)!=PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)!=PackageManager.PERMISSION_GRANTED )
+    {
+        ActivityCompat.requestPermissions(this,perm,100);
+    }
         ListView listView = (ListView) findViewById(R.id.myList);
         ContactAdapter contactAdapter = new ContactAdapter(name,number);
         listView.setAdapter(contactAdapter);
@@ -88,12 +96,20 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.smsUser:
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_CALL);
-                //intent.setData(Uri.parse())
+               Intent sms = new Intent();
+                sms.setAction(Intent.ACTION_SENDTO);
+               // sms.
+                sms.setData(Uri.parse("smsto:"+number[pos]));
+                sms.putExtra("sms_body","aaaaa");
+                if(sms.resolveActivity(getPackageManager())!=null) {
+                    startActivity(sms);
+                }
                 break;
             case R.id.callUser:
-                Toast.makeText(this,"Call",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:"+number[pos]));
+                startActivity(intent);
                 break;
 
         }
